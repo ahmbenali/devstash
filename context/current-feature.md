@@ -4,7 +4,7 @@
 
 ## Status
 
-In Progress
+Completed
 
 ## Overview
 Phase 2 of 3 for the dashboard UI layout. This phase adds a collapsible sidebar with navigation, collections, and user avatar area.
@@ -31,3 +31,4 @@ Use the screenshot @context/screenshots/dashboard-ui-main.png as the visual refe
 - 2026-05-04: Initial setup of Next.js project.
 - 2026-05-05: Added mock data for dashboard UI
 - 2026-05-05: Completed Dashboard UI Phase 1
+- 2026-05-05: Completed Dashboard UI Phase 2
