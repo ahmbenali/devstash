@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, Star, Clock, Code, Sparkles, FileText, Terminal, File, Image as ImageIcon, Link as LinkIcon, User } from 'lucide-react'
+import { Menu, X, Star, Clock, Code, Sparkles, FileText, Terminal, File, Image as ImageIcon, Link as LinkIcon, User, ChevronLeft, ChevronRight } from 'lucide-react'
 import { collections, itemTypes, currentUser } from '@/lib/mock-data'
 
 type SidebarProps = {
@@ -38,6 +38,12 @@ const recentCollections = [...collections]
   .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   .slice(0, 3)
 
+// Navigation items
+const navItems = [
+  { href: '/dashboard', icon: <Menu className='w-4 h-4' />, label: 'All Items' },
+  { href: '/dashboard/favorites', icon: <Star className='w-4 h-4' />, label: 'Favorites' },
+]
+
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false)
 
@@ -50,8 +56,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // On mobile, sidebar should auto-close when navigating
-  // But we always show the drawer on mobile per requirements
+  // On mobile, sidebar should be controlled by drawer
+  // On desktop, sidebar can be toggled but stays open by default
 
   return (
     <>
@@ -66,58 +72,70 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-50 transition-all duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0 md:w-64'
-        } md:translate-x-0 md:w-64`}
+          isOpen ? 'w-64' : 'w-16'
+        }`}
       >
-        <div className='h-full flex flex-col p-4 overflow-y-auto'>
-          {/* Drawer close button (mobile only) */}
-          <div className='flex items-center justify-between mb-6 md:hidden'>
+        <div className='h-full flex flex-col p-2 overflow-y-auto'>
+          {/* Logo - always visible */}
+          <div className='flex items-center justify-between mb-4 px-2'>
             <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold'>
+              <div className='w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold flex-shrink-0'>
                 DS
               </div>
-              <span className='font-semibold text-lg'>DevStash</span>
+              {isOpen && <span className='font-semibold text-lg whitespace-nowrap'>DevStash</span>}
             </div>
-            <button
-              onClick={onToggle}
-              className='p-2 hover:bg-gray-800 rounded'
-            >
-              <X className='w-5 h-5' />
-            </button>
+            {/* Collapse/Expand toggle - shown on desktop, close button on mobile */}
+            {isMobile ? (
+              isOpen && (
+                <button
+                  onClick={onToggle}
+                  className='p-2 hover:bg-gray-800 rounded'
+                >
+                  <X className='w-5 h-5' />
+                </button>
+              )
+            ) : (
+              <button
+                onClick={onToggle}
+                className='p-2 hover:bg-gray-800 rounded text-gray-400'
+              >
+                {isOpen ? <ChevronLeft className='w-4 h-4' /> : <ChevronRight className='w-4 h-4' />}
+              </button>
+            )}
           </div>
 
-          {/* Navigation - All Items */}
-          <div className='space-y-1 mb-6'>
-            <Link
-              href='/dashboard'
-              className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors'
-            >
-              <Menu className='w-4 h-4' />
-              <span>All Items</span>
-            </Link>
-            <Link
-              href='/dashboard/favorites'
-              className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors'
-            >
-              <Star className='w-4 h-4' />
-              <span>Favorites</span>
-            </Link>
+          {/* Navigation - All Items & Favorites */}
+          <div className='space-y-1 mb-4'>
+            {navItems.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors group'
+                title={!isOpen ? item.label : undefined}
+              >
+                <span className='text-gray-400'>{item.icon}</span>
+                {isOpen && <span>{item.label}</span>}
+              </Link>
+            ))}
           </div>
 
           {/* Favorite Collections */}
           {favoriteCollections.length > 0 && (
-            <div className='space-y-1 mb-6'>
-              <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
-                Favorite Collections
-              </h3>
+            <div className='space-y-1 mb-4'>
+              {isOpen && (
+                <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
+                  Favorite Collections
+                </h3>
+              )}
               {favoriteCollections.map(collection => (
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.id}`}
-                  className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors'
+                  className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors group'
+                  title={!isOpen ? collection.name : undefined}
                 >
-                  <Star className='w-4 h-4 text-yellow-400' />
-                  <span>{collection.name}</span>
+                  <Star className='w-4 h-4 text-yellow-400 flex-shrink-0' />
+                  {isOpen && <span className='truncate'>{collection.name}</span>}
                 </Link>
               ))}
             </div>
@@ -125,58 +143,78 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
           {/* Most Recent Collections */}
           {recentCollections.length > 0 && (
-            <div className='space-y-1 mb-6'>
-              <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
-                Recent Collections
-              </h3>
+            <div className='space-y-1 mb-4'>
+              {isOpen && (
+                <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
+                  Recent Collections
+                </h3>
+              )}
               {recentCollections.map(collection => (
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.id}`}
-                  className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors'
+                  className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors group'
+                  title={!isOpen ? collection.name : undefined}
                 >
-                  <Clock className='w-4 h-4 text-gray-400' />
-                  <span>{collection.name}</span>
+                  <Clock className='w-4 h-4 text-gray-400 flex-shrink-0' />
+                  {isOpen && <span className='truncate'>{collection.name}</span>}
                 </Link>
               ))}
             </div>
           )}
 
           {/* Item Types with links to /items/TYPE */}
-          <div className='space-y-1 mb-6'>
-            <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
-              Item Types
-            </h3>
+          <div className='space-y-1 mb-4'>
+            {isOpen && (
+              <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-1'>
+                Item Types
+              </h3>
+            )}
             {itemTypes.map(type => (
               <Link
                 key={type.id}
                 href={`/items/${type.name.toLowerCase()}`}
-                className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors'
+                className='flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-gray-800 transition-colors group'
+                title={!isOpen ? type.name : undefined}
               >
-                <span className={colorMap[type.color] || 'text-gray-400'}>
+                <span className={`flex-shrink-0 ${colorMap[type.color] || 'text-gray-400'}`}>
                   {iconMap[type.icon] || <File className='w-4 h-4' />}
                 </span>
-                <span>{type.name}</span>
+                {isOpen && <span className='truncate'>{type.name}</span>}
               </Link>
             ))}
           </div>
 
           {/* User Avatar Area */}
           <div className='mt-auto pt-4 border-t border-gray-800'>
-            <div className='flex items-center gap-3 px-3 py-2'>
-              <div className='w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-sm'>
+            <div className='flex items-center gap-3 px-3 py-2 group'>
+              <div className='w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0'>
                 {currentUser.email?.charAt(0).toUpperCase()}
               </div>
-              <div className='flex-1 min-w-0'>
-                <div className='text-sm font-medium'>{currentUser.email}</div>
-                <div className='text-xs text-gray-400'>{currentUser.isPro ? 'Pro' : 'Free'}</div>
-              </div>
-              <Link
-                href='/settings'
-                className='p-2 hover:bg-gray-800 rounded'
-              >
-                <User className='w-4 h-4' />
-              </Link>
+              {isOpen && (
+                <>
+                  <div className='flex-1 min-w-0'>
+                    <div className='text-sm font-medium truncate'>{currentUser.email}</div>
+                    <div className='text-xs text-gray-400'>{currentUser.isPro ? 'Pro' : 'Free'}</div>
+                  </div>
+                  <Link
+                    href='/settings'
+                    className='p-2 hover:bg-gray-800 rounded'
+                    title='Settings'
+                  >
+                    <User className='w-4 h-4' />
+                  </Link>
+                </>
+              )}
+              {!isOpen && (
+                <Link
+                  href='/settings'
+                  className='p-2 hover:bg-gray-800 rounded'
+                  title='Settings'
+                >
+                  <User className='w-4 h-4' />
+                </Link>
+              )}
             </div>
           </div>
         </div>

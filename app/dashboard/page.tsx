@@ -45,6 +45,14 @@ export default function DashboardPage() {
             <Menu className='w-5 h-5' />
           </button>
 
+          {/* Sidebar toggle for desktop - shown on large screens */}
+          <button
+            onClick={toggleSidebar}
+            className='p-2 hover:bg-gray-800 rounded hidden md:block'
+          >
+            <Menu className='w-5 h-5' />
+          </button>
+
           <div className='flex items-center gap-2'>
             <div className='w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold'>
               DS
@@ -68,12 +76,12 @@ export default function DashboardPage() {
 
       {/* Main content area */}
       <div className='flex flex-1 overflow-hidden'>
-        {/* Sidebar - always shown on desktop, toggleable on mobile */}
-        <Sidebar isOpen={isSidebarOpen || !isMobile} onToggle={toggleSidebar} />
+        {/* Sidebar - always shown on desktop (collapsible), toggleable on mobile */}
+        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
 
-        {/* Main area - margin left to account for sidebar width on desktop */}
+        {/* Main area - margin left to account for sidebar width */}
         <main className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ease-in-out ${
-          isSidebarOpen || !isMobile ? 'md:ml-64' : 'md:ml-0'
+          isSidebarOpen ? 'ml-64 md:ml-64' : isMobile ? 'ml-0' : 'ml-16'
         }`}>
           <h1 className='text-2xl font-bold mb-6'>Dashboard</h1>
 
