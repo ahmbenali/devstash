@@ -1,79 +1,80 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, Plus } from 'lucide-react'
+import { Search, Menu } from 'lucide-react'
 import { getItemsWithRelations } from '@/lib/mock-data'
+import { Sidebar } from '@/components/layout/Sidebar'
 
 export default function DashboardPage() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      // On mobile, sidebar should be controlled by drawer
+      // On desktop, sidebar can be toggled but stays open by default
+      if (!mobile) {
+        setIsSidebarOpen(true)
+      }
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   const items = getItemsWithRelations()
 
   return (
     <div className='flex flex-col h-screen'>
-      {/* Top bar with search and new item button */}
+      {/* Top bar with logo, search and buttons */}
       <header className='border-b border-gray-800 p-4 flex items-center justify-between'>
-        <div className='flex items-center gap-4 w-full max-w-md'>
-          <div className='relative w-full'>
-            <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-            <Input
-              type='search'
-              placeholder='Search items...'
-              className='w-full pl-9 bg-gray-900 border-gray-700'
-            />
+        <div className='flex items-center gap-4'>
+          {/* Drawer icon for mobile sidebar toggle - always shown on mobile */}
+          <button
+            onClick={toggleSidebar}
+            className='p-2 hover:bg-gray-800 rounded md:hidden'
+          >
+            <Menu className='w-5 h-5' />
+          </button>
+
+          <div className='flex items-center gap-2'>
+            <div className='w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold'>
+              DS
+            </div>
+            <span className='font-semibold text-lg'>DevStash</span>
           </div>
         </div>
-        <Button className='gap-2'>
-          <Plus className='h-4 w-4' />
-          New Item
-        </Button>
+        <div className='relative w-full max-w-xs'>
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
+          <Input
+            type='search'
+            placeholder='Search items...'
+            className='w-full pl-9 bg-gray-900 border-gray-700'
+          />
+        </div>
+        <div className='flex items-center gap-2'>
+          <Button>New Collection</Button>
+          <Button>New Item</Button>
+        </div>
       </header>
 
       {/* Main content area */}
       <div className='flex flex-1 overflow-hidden'>
-        {/* Sidebar placeholder */}
-        <aside className='w-64 border-r border-gray-800 p-4 overflow-y-auto'>
-          <div className='space-y-4'>
-            <h2 className='text-lg font-semibold'>Collections</h2>
-            <div className='space-y-2'>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer'>
-                All Items
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer'>
-                Favorites
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer'>
-                React Patterns
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer'>
-                Context Files
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer'>
-                Python Snippets
-              </div>
-            </div>
+        {/* Sidebar - always shown on desktop, toggleable on mobile */}
+        <Sidebar isOpen={isSidebarOpen || !isMobile} onToggle={toggleSidebar} />
 
-            <h2 className='text-lg font-semibold pt-4'>Item Types</h2>
-            <div className='space-y-2'>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer flex items-center gap-2'>
-                <span className='w-2 h-2 rounded-full bg-blue-500'></span>
-                Snippets
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer flex items-center gap-2'>
-                <span className='w-2 h-2 rounded-full bg-purple-500'></span>
-                Prompts
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer flex items-center gap-2'>
-                <span className='w-2 h-2 rounded-full bg-green-500'></span>
-                Notes
-              </div>
-              <div className='px-3 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer flex items-center gap-2'>
-                <span className='w-2 h-2 rounded-full bg-orange-500'></span>
-                Commands
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main area */}
-        <main className='flex-1 p-6 overflow-y-auto'>
+        {/* Main area - margin left to account for sidebar width on desktop */}
+        <main className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ease-in-out ${
+          isSidebarOpen || !isMobile ? 'md:ml-64' : 'md:ml-0'
+        }`}>
           <h1 className='text-2xl font-bold mb-6'>Dashboard</h1>
 
           {/* Items grid */}
