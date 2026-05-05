@@ -1,0 +1,10 @@
+model_list:
+  - model_name: '*'
+    litellm_params:
+      # model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      model: nvidia_nim/mistralai/mistral-medium-3.5-128b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: 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
+
+litellm_settings:
+  drop_params: true
