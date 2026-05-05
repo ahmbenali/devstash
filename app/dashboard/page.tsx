@@ -9,12 +9,10 @@ import { Sidebar } from '@/components/layout/Sidebar'
 
 export default function DashboardPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
       // On mobile, sidebar should be controlled by drawer
       // On desktop, sidebar can be toggled but stays open by default
       if (!mobile) {
@@ -76,13 +74,18 @@ export default function DashboardPage() {
 
       {/* Main content area */}
       <div className='flex flex-1 overflow-hidden'>
-        {/* Sidebar - always shown on desktop (collapsible), toggleable on mobile */}
-        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
+        {/* Sidebar - starts below topbar, always shown on desktop (collapsible), toggleable on mobile */}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onToggle={toggleSidebar}
+        />
 
         {/* Main area - margin left to account for sidebar width */}
-        <main className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? 'ml-64 md:ml-64' : isMobile ? 'ml-0' : 'ml-16'
-        }`}>
+        <main
+          className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? 'md:ml-64' : 'md:ml-16'
+          }`}
+        >
           <h1 className='text-2xl font-bold mb-6'>Dashboard</h1>
 
           {/* Items grid */}

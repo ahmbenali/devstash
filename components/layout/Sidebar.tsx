@@ -56,9 +56,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // On mobile, sidebar should be controlled by drawer
-  // On desktop, sidebar can be toggled but stays open by default
-
   return (
     <>
       {/* Mobile overlay (only when sidebar is open on mobile) */}
@@ -69,41 +66,43 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - starts below topbar (top-16), extends to bottom of viewport */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-50 transition-all duration-300 ease-in-out ${
+        className={`fixed left-0 top-16 bottom-0 bg-gray-900 border-r border-gray-800 z-50 transition-all duration-300 ease-in-out ${
           isOpen ? 'w-64' : 'w-16'
         }`}
       >
-        <div className='h-full flex flex-col p-2 overflow-y-auto'>
-          {/* Logo - always visible */}
-          <div className='flex items-center justify-between mb-4 px-2'>
-            <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold flex-shrink-0'>
-                DS
-              </div>
-              {isOpen && <span className='font-semibold text-lg whitespace-nowrap'>DevStash</span>}
-            </div>
-            {/* Collapse/Expand toggle - shown on desktop, close button on mobile */}
-            {isMobile ? (
-              isOpen && (
-                <button
-                  onClick={onToggle}
-                  className='p-2 hover:bg-gray-800 rounded'
-                >
-                  <X className='w-5 h-5' />
-                </button>
-              )
-            ) : (
-              <button
-                onClick={onToggle}
-                className='p-2 hover:bg-gray-800 rounded text-gray-400'
-              >
-                {isOpen ? <ChevronLeft className='w-4 h-4' /> : <ChevronRight className='w-4 h-4' />}
-              </button>
+        {/* Header with Navigation text and toggle */}
+        <div className='h-12 flex items-center justify-between px-2 border-b border-gray-800'>
+          <div className='flex items-center gap-2'>
+            {isOpen && (
+              <span className='font-semibold text-lg whitespace-nowrap'>
+                Navigation
+              </span>
             )}
           </div>
+          {/* Collapse/Expand toggle - shown on desktop, close button on mobile */}
+          {isMobile ? (
+            isOpen && (
+              <button
+                onClick={onToggle}
+                className='p-2 hover:bg-gray-800 rounded'
+              >
+                <X className='w-5 h-5' />
+              </button>
+            )
+          ) : (
+            <button
+              onClick={onToggle}
+              className='p-2 hover:bg-gray-800 rounded text-gray-400'
+            >
+              {isOpen ? <ChevronLeft className='w-4 h-4' /> : <ChevronRight className='w-4 h-4' />}
+            </button>
+          )}
+        </div>
 
+        {/* Scrollable content area */}
+        <div className='h-[calc(100vh-7rem)] overflow-y-auto p-2'>
           {/* Navigation - All Items & Favorites */}
           <div className='space-y-1 mb-4'>
             {navItems.map(item => (
