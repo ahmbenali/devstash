@@ -234,7 +234,24 @@ model ItemTag {
 - Syntax highlighting for code
 - Inspired by **Notion, Linear, Raycast**
 
-### Layout
+### Design References
+
+- [Linear](https://linear.app)
+- modern dev aesthetic
+- [Raycast](https://raycast.app)
+- Quick access patterns
+- [Notion](https://notion.so)
+- clean organisation
+
+### Screenshots
+
+Refer to the screenshots bellow as a reference to the design and layout of the application.
+
+- @context/screenshots/dashboard-ui-main.png
+- @context/screenshots/sidebar-collapsed.png
+- @context/screenshots/dashboard-item-sheet.png
+
+### Layout Structure
 
 - **Collapsible sidebar** with filters & collections
 - Main grid/list workspace

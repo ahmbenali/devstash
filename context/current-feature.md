@@ -18,4 +18,4 @@ Not Started
 
 ## History
 
-<!-- Keep this updated. Earliest to latest -->
+- 2026-05-04: Initial setup of Next.js project.
