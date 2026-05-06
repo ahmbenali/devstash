@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { StatsCard } from '@/components/ui/StatsCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search, Menu } from 'lucide-react'
@@ -87,6 +88,14 @@ export default function DashboardPage() {
           }`}
         >
           <h1 className='text-2xl font-bold mb-6'>Dashboard</h1>
+
+          {/* Stats Cards Section - 4 cards at the top */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
+            <StatsCard title='Total Items' value={items.length} icon={<span>📄</span>} />
+            <StatsCard title='Collections' value={items.filter(item => item.collection).length} icon={<span>📁</span>} />
+            <StatsCard title='Favorite Items' value={items.filter(item => item.isFavorite).length} icon={<span>⭐</span>} />
+            <StatsCard title='Recent Items' value={10} description='Last 10 items created' icon={<span>⏰</span>} />
+          </div>
 
           {/* Items grid */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
